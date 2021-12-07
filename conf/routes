@@ -10,6 +10,8 @@ GET         /                    controllers.HomeController.index
 GET         /assets/*file        controllers.Assets.versioned(path="/public", file: Asset)
 #
 ## user/admin stuff
+GET         /register            controllers.UserController.showRegisterForm
+POST        /doRegister          controllers.UserController.processRegisterAttempt
 GET         /login               controllers.UserController.showLoginForm
 POST        /doLogin             controllers.UserController.processLoginAttempt
 #
@@ -17,5 +19,8 @@ POST        /doLogin             controllers.UserController.processLoginAttempt
 GET         /logout              controllers.AuthenticatedUserController.logout
 GET         /landingPage         controllers.LandingPageController.showLandingPage
 #
-## show contacts
-#GET     /contacts                                 controllers.ContactPageController.listContacts
+## show profile
+GET         /profile/*user      controllers.ProfilePageController.showProfilePage(user: String)
+
+## debug pages ## TODO: these should not exist when submitting the project
+GET         /userList            controllers.DebugController.showUserListPage

@@ -16,9 +16,24 @@ class UserDao @Inject()() {
     if (users.contains(u.username)) true else false
   }
 
+  def lookupUser(username: String): Boolean = {
+    if (users.contains(username)) true else false
+  }
+
   def removeSharedTweetById(id: Int): Unit = {
     for ((_, user) <- users) {
       user.sharedTweets = user.sharedTweets.filter(_ != id)
     }
+  }
+
+  def addUser(u: LoginAttempt): Boolean = {
+    if (!lookupUser(u)) {
+      users += (u.username -> User(u.username, u.password, List()))
+      true
+    } else false
+  }
+
+  def getUser(u: String): User = {
+    users(u)
   }
 }

@@ -1,0 +1,52 @@
+@(
+        form: Form[models.RegisterAttempt],
+        postUrl: Call)(implicit session: Session, request: MessagesRequestHeader)
+@main("Create account", session) {
+    @defining(play.core.PlayVersion.current) { version =>
+        <div class="wrapper fadeInDown">
+            <div id="user-register-form">
+                @request.flash.data.map { case (name, value) =>
+                <div>@name: @value</div>
+                }
+
+                @if(form.hasGlobalErrors) {
+                    @form.globalErrors.map { error: FormError =>
+                        <div class="alert alert-danger">
+                            Error: @error.key: @error.message
+                        </div>
+                    }
+                }
+
+                @helper.form(postUrl, Symbol("id") -> "user-register-form") {
+                    @helper.CSRF.formField
+
+                    @helper.inputText(
+                        form("username"),
+                        Symbol("label") -> "Username",
+                        Symbol("placeholder") -> "username",
+                        Symbol("id") -> "username",
+                        Symbol("size") -> 60
+                    )
+
+                    @helper.inputPassword(
+                        form("password"),
+                        Symbol("label") -> "password",
+                        Symbol("placeholder") -> "password",
+                        Symbol("id") -> "password",
+                        Symbol("size") -> 60
+                    )
+
+                    @helper.inputPassword(
+                        form("verifyPassword"),
+                        Symbol("label") -> "Verify password",
+                        Symbol("placeholder") -> "Verify password",
+                        Symbol("id") -> "verifyPassword",
+                        Symbol("size") -> 60
+
+                    )
+                    <input type="submit" value="register">
+                    }
+            </div>
+        </div>
+    }
+}

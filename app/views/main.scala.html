@@ -76,6 +76,7 @@
                             <a class="nav-link active" aria-current="page" href="@routes.HomeController.index()">Home</a>
                             @if(session.get(models.Global.SESSION_USERNAME_KEY).isEmpty) {
                                 <a class="nav-link" href="@routes.UserController.showLoginForm()">Login</a>
+                                <a class="nav-link" href="@routes.UserController.showRegisterForm()">Register</a>
                             } else {
                                 @* <a class="nav-link" href="#">Pricing</a>*@
                                 @* <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>*@

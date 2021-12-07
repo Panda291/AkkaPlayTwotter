@@ -1,0 +1,10 @@
+@(user: User, tweets: List[Tweet])(implicit session: Session)
+    @main(user.username, session) {
+        <ul>
+            <li>@user.username<li>
+            @for(tweet <- tweets) {
+                <li>@tweet.content</li>
+            }
+        </ul>
+        @tweets.size
+    }

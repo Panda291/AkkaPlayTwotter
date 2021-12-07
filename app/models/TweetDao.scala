@@ -22,7 +22,9 @@ class TweetDao @Inject()(userDao: UserDao) {
   }
 
   def tweetsById(ids: List[Int]): List[Tweet] = {
-    tweets.filter(ids.contains(_)).toList
+    tweets.filter(t => {
+      ids.contains(t.id)
+    }).toList
   }
 
   def addTweet(tweet: Tweet): Unit = {
