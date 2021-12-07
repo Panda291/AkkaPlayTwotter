@@ -1,9 +1,9 @@
 package controllers
 
-import models.{Comment, DebugTweets, Tweet}
+import models.TweetDao
+import play.api.mvc._
 
 import javax.inject._
-import play.api.mvc._
 @Singleton
 class LandingPageController @Inject()(
     cc: ControllerComponents,
@@ -14,7 +14,7 @@ class LandingPageController @Inject()(
     // notice that this uses `authenticatedUserAction`.
     def showLandingPage() = authenticatedUserAction { implicit request: Request[AnyContent] =>
         Ok(views.html.loginLandingPage(
-            DebugTweets.tweets
+            TweetDao.tweets.toList
         ))
     }
 

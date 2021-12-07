@@ -1,3 +1,3 @@
 package models
 
-case class LoginAttempt()
+case class LoginAttempt(username: String, password: String)

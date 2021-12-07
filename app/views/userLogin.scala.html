@@ -1,5 +1,5 @@
 @(
-    form: Form[models.User],
+    form: Form[models.LoginAttempt],
     postUrl: Call)(implicit session: Session, request: MessagesRequestHeader)
 @main("User Login", session) {
     @defining(play.core.PlayVersion.current) { version =>

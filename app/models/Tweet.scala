@@ -1,10 +1,13 @@
 package models
 
+import akka.http.scaladsl.model.DateTime
+
 case class Tweet(
+                  id: Int,
                   username: String,
-                  userTag: String,
                   content: String,
                   hashtag: String,
                   likes: Int,
-                  comments: List[Comment]
+                  comments: List[Comment],
+                  timestamp: DateTime
                 )

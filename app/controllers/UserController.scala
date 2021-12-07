@@ -1,7 +1,7 @@
 package controllers
 
 import javax.inject.Inject
-import models.{Global, User, UserDao}
+import models.{Global, LoginAttempt, User, UserDao}
 import play.api.data.Forms._
 import play.api.data._
 import play.api.mvc._
@@ -13,7 +13,7 @@ class UserController @Inject()(
 
     private val logger = play.api.Logger(this.getClass)
 
-    val form: Form[User] = Form (
+    val form: Form[LoginAttempt] = Form (
         mapping(
             "username" -> nonEmptyText
                 .verifying("too few chars",  s => lengthIsGreaterThanNCharacters(s, 2))
@@ -21,7 +21,7 @@ class UserController @Inject()(
             "password" -> nonEmptyText
                 .verifying("too few chars",  s => lengthIsGreaterThanNCharacters(s, 2))
                 .verifying("too many chars", s => lengthIsLessThanNCharacters(s, 30)),
-        )(User.apply)(User.unapply)
+        )(LoginAttempt.apply)(LoginAttempt.unapply)
     )
 
     private val formSubmitUrl = routes.UserController.processLoginAttempt
@@ -31,11 +31,11 @@ class UserController @Inject()(
     }
 
     def processLoginAttempt: Action[AnyContent] = Action { implicit request: MessagesRequest[AnyContent] =>
-        val errorFunction = { formWithErrors: Form[User] =>
+        val errorFunction = { formWithErrors: Form[LoginAttempt] =>
             // form validation/binding failed...
             BadRequest(views.html.userLogin(formWithErrors, formSubmitUrl))
         }
-        val successFunction = { user: User =>
+        val successFunction = { user: LoginAttempt =>
             // form validation/binding succeeded ...
             val foundUser: Boolean = userDao.lookupUser(user)
             if (foundUser) {
@@ -47,7 +47,7 @@ class UserController @Inject()(
                     .flashing("error" -> "Invalid username/password.")
             }
         }
-        val formValidationResult: Form[User] = form.bindFromRequest
+        val formValidationResult: Form[LoginAttempt] = form.bindFromRequest
         formValidationResult.fold(
             errorFunction,
             successFunction
