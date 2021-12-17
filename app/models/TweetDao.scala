@@ -41,4 +41,20 @@ class TweetDao @Inject()(userDao: UserDao) {
   def tweetsSortedByDate(): List[Tweet] = {
     tweets.toList.sortWith(_.timestamp > _.timestamp)
   }
+
+  def tweetExists(id: Int): Boolean = {
+    tweets.exists(_.id == id)
+  }
+
+  def removeTweet(id: Long, username: String): Boolean = {
+    try {
+      val tweet = tweets.filter(_.id == id).head
+      if (tweet.username == username) {
+        tweets -= tweet
+        true
+      } else false
+    } catch {
+      case _: Exception => false
+    }
+  }
 }

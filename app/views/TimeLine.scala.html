@@ -1,6 +1,8 @@
+@import views.html.helper.CSRF
 @(tweets: List[Tweet],
         form: Form[models.NewTweetAttempt],
-        postUrl: Call)(implicit session: Session,
+        postUrl: Call,
+        removeUrl: Call)(implicit session: Session,
         request: MessagesRequestHeader) @* (implicit flash: Flash)*@
 @main("My Timeline", session) {
     <div id="content" class="wrapper doc">
@@ -39,7 +41,7 @@
                 <input type="file" name="picture">
 
                 <input type="submit" value="Tweet">
-            }
+                }
         </div>
 
 
@@ -56,6 +58,15 @@
                         <p class="card-text">@tweet.content</p>
                         @if(tweet.hashtag != "") {
                             <p class="card-text">@tweet.hashtag</p>
+                        }
+                        @if(tweet.username == session.get("username").get) {
+                            @helper.form(removeUrl, Symbol("id") -> s"remove-tweet-form-${tweet.id}") {
+                                @helper.CSRF.formField
+
+                                <input type="hidden" name="id" value="@tweet.id">
+
+                                <input type="submit" value="delete" class="alert alert-danger">
+                                }
                         }
                     </div>
                     @if(tweet.comments.nonEmpty) {

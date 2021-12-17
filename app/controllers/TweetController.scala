@@ -1,6 +1,6 @@
 package controllers
 
-import models.{NewTweetAttempt, TweetDao}
+import models.{NewTweetAttempt, RemoveTweetAttempt, TweetDao}
 import play.api.data.Forms._
 import play.api.data._
 import play.api.mvc._
@@ -28,13 +28,15 @@ class TweetController @Inject()(
   )
 
   private val formSubmitUrl = routes.TweetController.postTweet
+  private val formRemoveUrl = routes.TweetController.removeTweet
 
   def showTimeLine(): Action[AnyContent] = Action { implicit request: MessagesRequest[AnyContent] =>
     if (request.session.get(models.Global.SESSION_USERNAME_KEY).isDefined) {
       Ok(views.html.TimeLine(
         tweetDao.tweetsSortedByDate(),
         newTweetForm,
-        formSubmitUrl
+        formSubmitUrl,
+        formRemoveUrl
       ))
     } else {
       Redirect(routes.UserController.showLoginForm())
@@ -56,10 +58,10 @@ class TweetController @Inject()(
           Ok("File uploaded")
         }
         .getOrElse {
-          BadRequest(views.html.TimeLine(tweetDao.tweetsSortedByDate(), newTweetForm, formSubmitUrl))
+          BadRequest(views.html.TimeLine(tweetDao.tweetsSortedByDate(), newTweetForm, formSubmitUrl, formRemoveUrl))
         }
       val errorFunction = { formWithErrors: Form[NewTweetAttempt] =>
-        BadRequest(views.html.TimeLine(tweetDao.tweetsSortedByDate(), formWithErrors, formSubmitUrl))
+        BadRequest(views.html.TimeLine(tweetDao.tweetsSortedByDate(), formWithErrors, formSubmitUrl, formRemoveUrl))
       }
       val successFunction = { tweet: NewTweetAttempt =>
         tweetDao.addTweet(
@@ -79,6 +81,35 @@ class TweetController @Inject()(
     } else {
       Redirect(routes.UserController.showLoginForm()) // debug if i'm not logged in
     }
+  }
+
+
+  val removeTweetForm: Form[RemoveTweetAttempt] = Form(
+    mapping(
+      "id" -> number
+        .verifying("Tweet not found", s => tweetDao.tweetExists(s))
+    )(RemoveTweetAttempt.apply)(RemoveTweetAttempt.unapply)
+  )
+
+  def removeTweet = Action { implicit request =>
+    if (request.session.get(models.Global.SESSION_USERNAME_KEY).isDefined) {
+      val errorFunction = { formWithErrors: Form[RemoveTweetAttempt] =>
+        BadRequest(views.html.TimeLine(tweetDao.tweetsSortedByDate(), newTweetForm, formSubmitUrl, formRemoveUrl))
+      }
+      val successFunction = { tweet: RemoveTweetAttempt =>
+        if (tweetDao.removeTweet(tweet.id, request.session.get(models.Global.SESSION_USERNAME_KEY).get)) {
+          Redirect(routes.TweetController.showTimeLine())
+            .flashing("info" -> "Tweet removed successfully.")
+        } else {
+          Unauthorized
+        }
+      }
+      val formValidationResult: Form[RemoveTweetAttempt] = removeTweetForm.bindFromRequest
+      formValidationResult.fold(
+        errorFunction,
+        successFunction
+      )
+    } else Redirect(routes.UserController.showLoginForm())
   }
 
   private def lengthIsGreaterThanNCharacters(s: String, n: Int): Boolean = {
