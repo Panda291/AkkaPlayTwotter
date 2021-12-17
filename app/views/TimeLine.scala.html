@@ -54,7 +54,9 @@
                             <img src="@routes.Assets.versioned(s"images/${tweet.image.get}")" alt="missing image">
                         }
                         <p class="card-text">@tweet.content</p>
-                        <p class="card-text">@tweet.hashtag</p>
+                        @if(tweet.hashtag != "") {
+                            <p class="card-text">@tweet.hashtag</p>
+                        }
                     </div>
                     @if(tweet.comments.nonEmpty) {
                         <div class="card-footer">

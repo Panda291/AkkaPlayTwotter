@@ -22,7 +22,7 @@ class TweetController @Inject()(
         .verifying("too many chars", s => lengthIsLessThanNCharacters(s, 160)),
       "hashtag" -> text
         .verifying("no spaces in #", s => !s.contains(" "))
-        .verifying("hashtag should start with #", s => s.head == '#')
+        .verifying("hashtag should start with #", s => s == "" || s.head == '#')
         .verifying("too many chars", s => lengthIsLessThanNCharacters(s, 20)),
     )(NewTweetAttempt.apply)(NewTweetAttempt.unapply)
   )
