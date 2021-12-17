@@ -28,13 +28,9 @@ class TweetDao @Inject()(userDao: UserDao) {
     }).toList
   }
 
-  def addTweet(username: String, content: String, hashtag: String): Unit = {
-    try {
-      val tweet = Tweet(nextIndex, username, content, hashtag, 0, List(), DateTime.now)
+  def addTweet(username: String, content: String, hashtag: String, imageLink: Option[String]): Unit = {
+      val tweet = Tweet(nextIndex, username, content, hashtag, 0, List(), DateTime.now, imageLink)
       tweets += tweet
-    } catch {
-      case e: Exception => tweets += Tweet(nextIndex, "", "", "", 0, List(), DateTime.now)
-    }
   }
 
   def removeTweetById(id: Int): Unit = {

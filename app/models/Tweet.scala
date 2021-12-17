@@ -9,5 +9,6 @@ case class Tweet(
                   hashtag: String,
                   likes: Int,
                   comments: List[Comment],
-                  timestamp: DateTime
+                  timestamp: DateTime,
+                  image: Option[String] = None
                 )

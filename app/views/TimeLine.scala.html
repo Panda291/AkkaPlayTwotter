@@ -17,7 +17,7 @@
                 }
             }
 
-            @helper.form(postUrl, Symbol("id") -> "new-tweet-form") {
+            @helper.form(postUrl, Symbol("id") -> "new-tweet-form", Symbol("enctype") -> "multipart/form-data") {
                 @helper.CSRF.formField
 
                 @helper.inputText(
@@ -36,6 +36,8 @@
                     Symbol("size") -> 20
                 )
 
+                <input type="file" name="picture">
+
                 <input type="submit" value="Tweet">
             }
         </div>
@@ -48,9 +50,11 @@
                     <div class="card-body">
                         <h4 class="card-title">@tweet.username</h4>
                         @* <h6 class="card-subtitle mb-2 text-muted">@tweet.userTag</h6>*@
-                        <p class="card-text">
-                        @tweet.content
-                        </p>
+                        @if(tweet.image.isDefined) {
+                            <img src="@routes.Assets.versioned(s"images/${tweet.image.get}")" alt="missing image">
+                        }
+                        <p class="card-text">@tweet.content</p>
+                        <p class="card-text">@tweet.hashtag</p>
                     </div>
                     @if(tweet.comments.nonEmpty) {
                         <div class="card-footer">

@@ -5,6 +5,7 @@ import play.api.data.Forms._
 import play.api.data._
 import play.api.mvc._
 
+import java.nio.file.Paths
 import javax.inject._
 
 @Singleton
@@ -40,8 +41,23 @@ class TweetController @Inject()(
     }
   }
 
-  def postTweet: Action[AnyContent] = Action { implicit request: MessagesRequest[AnyContent] =>
+  def postTweet = Action(parse.multipartFormData) { implicit request =>
     if (request.session.get(models.Global.SESSION_USERNAME_KEY).isDefined) {
+      var imageLink: Option[String] = None
+      request.body
+        .file("picture")
+        .map { picture =>
+          val filename = Paths.get(picture.filename).getFileName
+          imageLink = Some(filename.toUri.toString.split('/').last)
+          val fileSize = picture.fileSize
+          val contentType = picture.contentType
+
+          picture.ref.copyTo(Paths.get(s"./public/images/$filename"), replace = true)
+          Ok("File uploaded")
+        }
+        .getOrElse {
+          BadRequest(views.html.TimeLine(tweetDao.tweetsSortedByDate(), newTweetForm, formSubmitUrl))
+        }
       val errorFunction = { formWithErrors: Form[NewTweetAttempt] =>
         BadRequest(views.html.TimeLine(tweetDao.tweetsSortedByDate(), formWithErrors, formSubmitUrl))
       }
@@ -49,7 +65,8 @@ class TweetController @Inject()(
         tweetDao.addTweet(
           request.session.get(models.Global.SESSION_USERNAME_KEY).get,
           tweet.content,
-          tweet.hashtag
+          tweet.hashtag,
+          imageLink
         )
         Redirect(routes.TweetController.showTimeLine())
           .flashing("info" -> "Tweet posted successfully.")
