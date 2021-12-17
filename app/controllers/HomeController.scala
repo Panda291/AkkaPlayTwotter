@@ -19,7 +19,7 @@ class HomeController @Inject()(cc: ControllerComponents) extends AbstractControl
    * a path of `/`.
    */
   def index() = Action { implicit request: Request[AnyContent] =>
-    Ok(views.html.index("Welcome to the 7th Software Architectures Lab Session"))
+    Redirect(routes.TweetController.showTimeLine())
   }
 
 }

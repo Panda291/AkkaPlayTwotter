@@ -16,6 +16,7 @@ class TweetDao @Inject()(userDao: UserDao) {
       Comment("user3", "only one comment for this one", 555555, DateTime.now)
     ), DateTime.now)
   )
+  var nextIndex: Long = tweets.map(_.id).max + 1
 
   def tweetsOfUser(username: String): List[Tweet] = {
     tweets.filter(_.username == username).toList
@@ -27,12 +28,21 @@ class TweetDao @Inject()(userDao: UserDao) {
     }).toList
   }
 
-  def addTweet(tweet: Tweet): Unit = {
-    tweets += tweet
+  def addTweet(username: String, content: String, hashtag: String): Unit = {
+    try {
+      val tweet = Tweet(nextIndex, username, content, hashtag, 0, List(), DateTime.now)
+      tweets += tweet
+    } catch {
+      case e: Exception => tweets += Tweet(nextIndex, "", "", "", 0, List(), DateTime.now)
+    }
   }
 
   def removeTweetById(id: Int): Unit = {
     tweets = tweets.filter(_.id != id)
     userDao.removeSharedTweetById(id)
+  }
+
+  def tweetsSortedByDate(): List[Tweet] = {
+    tweets.toList.sortWith(_.timestamp > _.timestamp)
   }
 }

@@ -3,7 +3,7 @@ package models
 import akka.http.scaladsl.model.DateTime
 
 case class Tweet(
-                  id: Int,
+                  id: Long,
                   username: String,
                   content: String,
                   hashtag: String,
