@@ -1,22 +1,30 @@
 package controllers
 
-import models.{TweetDao, UserDao}
+import models.{Tweet, TweetDao, UserDao}
 import play.api.mvc._
 
 import javax.inject.Inject
 
 class ProfilePageController @Inject()(userDao: UserDao,
                                       tweetDao: TweetDao,
-                                      cc: ControllerComponents,
+                                      cc: MessagesControllerComponents,
                                       authenticatedUserAction: AuthenticatedUserAction,
-                                     ) extends AbstractController(cc) {
-  def showProfilePage(username: String): Action[AnyContent] = authenticatedUserAction { implicit request: Request[AnyContent] =>
-    if (userDao.lookupUser(username)) {
-      val user = userDao.getUser(username)
-      val tweets = tweetDao.tweetsOfUser(username) ++ tweetDao.tweetsById(user.sharedTweets)
-      Ok(views.html.profilePage(user, tweets))
+                                     ) extends MessagesAbstractController(cc) {
+  def showProfilePage(username: String): Action[AnyContent] = Action { implicit request: MessagesRequest[AnyContent] =>
+    if (request.session.get(models.Global.SESSION_USERNAME_KEY).isDefined) {
+      if (userDao.lookupUser(username)) {
+        val user = userDao.getUser(username)
+        val tweets: List[Tweet] = tweetDao.tweetsOfUser(username) ++
+          tweetDao.tweetsById(user.sharedTweets).map({tweet =>
+            tweet.sharedBy = Some(username)
+          tweet
+          })
+        Ok(views.html.profilePage(user, tweets.sortBy(_.timestamp).reverse, routes.TweetController.removeTweet))
+      } else {
+        NoContent
+      }
     } else {
-      NoContent
+      Redirect(routes.UserController.showLoginForm())
     }
   }
 }

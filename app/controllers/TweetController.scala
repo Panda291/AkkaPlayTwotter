@@ -98,10 +98,10 @@ class TweetController @Inject()(
       }
       val successFunction = { tweet: RemoveTweetAttempt =>
         if (tweetDao.removeTweet(tweet.id, request.session.get(models.Global.SESSION_USERNAME_KEY).get)) {
-          Redirect(routes.TweetController.showTimeLine())
-            .flashing("info" -> "Tweet removed successfully.")
+//          Redirect(request.headers.apply("Referer")) // redirect to caller of this function (useful for profile page)
+          Ok
         } else {
-          Unauthorized
+          NoContent
         }
       }
       val formValidationResult: Form[RemoveTweetAttempt] = removeTweetForm.bindFromRequest

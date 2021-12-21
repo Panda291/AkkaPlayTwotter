@@ -47,10 +47,12 @@
         <ul class="tweets">
         @for(tweet <- tweets) {
             <li>
-                <div class="card tweet">
+                <div class="card tweet" id="tweet-@tweet.id">
                     <div class="card-body">
-                        <h4 class="card-title">@tweet.username</h4>
-                        @* <h6 class="card-subtitle mb-2 text-muted">@tweet.userTag</h6>*@
+                        <h4 class="card-title"><a href="/profile/@tweet.username">@tweet.username</a></h4>
+                        @if(tweet.sharedBy.isDefined) {
+                            <h6 class="card-subtitle mb-2 text-muted">Shared by: <a href="/profile/@tweet.sharedBy.get">@tweet.sharedBy.get</a></h6>
+                        }
                         @if(tweet.image.isDefined) {
                             <img src="@routes.Assets.versioned(s"images/${tweet.image.get}")" alt="missing image">
                         }
@@ -59,7 +61,7 @@
                             <p class="card-text">@tweet.hashtag</p>
                         }
                         @if(tweet.username == session.get("username").get) {
-                            @helper.form(removeUrl, Symbol("id") -> s"remove-tweet-form-${tweet.id}") {
+                            @helper.form(removeUrl, Symbol("id") -> s"remove-tweet-form-${tweet.id}", Symbol("class") -> "remove-tweet-form") {
                                 @helper.CSRF.formField
 
                                 <input type="hidden" name="id" value="@tweet.id">

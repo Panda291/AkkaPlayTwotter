@@ -10,5 +10,6 @@ case class Tweet(
                   likes: Int,
                   comments: List[Comment],
                   timestamp: DateTime,
-                  image: Option[String] = None
+                  image: Option[String] = None,
+                  var sharedBy: Option[String] = None,
                 )

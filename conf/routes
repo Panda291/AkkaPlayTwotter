@@ -19,7 +19,7 @@ POST        /doLogin             controllers.UserController.processLoginAttempt
 GET         /logout              controllers.AuthenticatedUserController.logout
 GET         /timeline            controllers.TweetController.showTimeLine
 POST        /doPostTweet         controllers.TweetController.postTweet
-POST      /removeTweet         controllers.TweetController.removeTweet
+POST        /removeTweet         controllers.TweetController.removeTweet
 #
 ## show profile
 GET         /profile/*user      controllers.ProfilePageController.showProfilePage(user: String)
