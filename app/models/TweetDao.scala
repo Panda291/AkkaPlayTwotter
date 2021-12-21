@@ -30,6 +30,7 @@ class TweetDao @Inject()(userDao: UserDao) {
 
   def addTweet(username: String, content: String, hashtag: String, imageLink: Option[String]): Unit = {
       val tweet = Tweet(nextIndex, username, content, hashtag, 0, List(), DateTime.now, imageLink)
+      nextIndex += 1
       tweets += tweet
   }
 

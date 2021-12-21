@@ -45,14 +45,13 @@ class TweetController @Inject()(
 
   def postTweet = Action(parse.multipartFormData) { implicit request =>
     if (request.session.get(models.Global.SESSION_USERNAME_KEY).isDefined) {
+//      https://www.playframework.com/documentation/2.8.x/ScalaFileUpload
       var imageLink: Option[String] = None
       request.body
         .file("picture")
         .map { picture =>
           val filename = Paths.get(picture.filename).getFileName
           imageLink = Some(filename.toUri.toString.split('/').last)
-          val fileSize = picture.fileSize
-          val contentType = picture.contentType
 
           picture.ref.copyTo(Paths.get(s"./public/images/$filename"), replace = true)
           Ok("File uploaded")
@@ -60,6 +59,7 @@ class TweetController @Inject()(
         .getOrElse {
           BadRequest(views.html.TimeLine(tweetDao.tweetsSortedByDate(), newTweetForm, formSubmitUrl, formRemoveUrl))
         }
+      // end of part found online
       val errorFunction = { formWithErrors: Form[NewTweetAttempt] =>
         BadRequest(views.html.TimeLine(tweetDao.tweetsSortedByDate(), formWithErrors, formSubmitUrl, formRemoveUrl))
       }
