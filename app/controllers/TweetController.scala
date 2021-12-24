@@ -3,6 +3,7 @@ package controllers
 import models.{NewTweetAttempt, RemoveTweetAttempt, TweetDao}
 import play.api.data.Forms._
 import play.api.data._
+import play.api.libs.json.JsValue
 import play.api.mvc._
 
 import java.nio.file.Paths
@@ -111,6 +112,30 @@ class TweetController @Inject()(
       )
     } else Redirect(routes.UserController.showLoginForm())
   }
+
+  def likeTweet = authenticatedUserAction { implicit request =>
+//    val body: AnyContent = request.body
+    val body: Option[Map[String, Seq[String]]] = request.body.asFormUrlEncoded
+    body.map {body =>
+      if(tweetDao.likeTweet(body("id").head.toInt, request.session.get(models.Global.SESSION_USERNAME_KEY).get)) {
+        Ok("added")
+      } else {
+        Ok("removed")
+      }
+    } .getOrElse {
+      BadRequest("Expecting application/json request body")
+    }
+  }
+
+//  def unlikeTweet = authenticatedUserAction { implicit request =>
+//    val body: Option[Map[String, Seq[String]]] = request.body.asFormUrlEncoded
+//    body.map {body =>
+//      tweetDao.unlikeTweet(body("id").head.toInt, request.session.get(models.Global.SESSION_USERNAME_KEY).get)
+//      Ok
+//    }.getOrElse {
+//      BadRequest("Expecting application/json request body")
+//    }
+//  }
 
   private def lengthIsGreaterThanNCharacters(s: String, n: Int): Boolean = {
     if (s.length > n) true else false

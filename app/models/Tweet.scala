@@ -7,7 +7,7 @@ case class Tweet(
                   username: String,
                   content: String,
                   hashtag: String,
-                  likes: Int,
+                  var likes: List[String],
                   comments: List[Comment],
                   timestamp: DateTime,
                   image: Option[String] = None,

@@ -3,88 +3,109 @@
         postUrl: Call,
         removeUrl: Call)(implicit session: Session,
         request: MessagesRequestHeader) @* (implicit flash: Flash)*@
-@main("My Timeline", session) {
-    <div id="content" class="wrapper doc">
-        <div id="new-tweet-form">
-            @request.flash.data.map { case (name, value) =>
-            <div>@name: @value</div>
-            }
-
-            @if(form.hasGlobalErrors) {
-                @form.globalErrors.map { error: FormError =>
-                    <div class="alert alert-danger">
-                        Error: @error.key: @error.message
-                    </div>
+    @main("My Timeline", session) {
+        <div id="content" class="wrapper doc">
+            <div id="new-tweet-form">
+                @request.flash.data.map { case (name, value) =>
+                <div>@name: @value</div>
                 }
-            }
 
-            @helper.form(postUrl, Symbol("id") -> "new-tweet-form", Symbol("enctype") -> "multipart/form-data") {
-                @helper.CSRF.formField
-
-                @helper.inputText(
-                    form("content"),
-                    Symbol("label") -> "What's on your mind?",
-                    Symbol("placeholder") -> "Today I ...",
-                    Symbol("id") -> "content",
-                    Symbol("size") -> 160
-                )
-
-                @helper.inputText(
-                    form("hashtag"),
-                    Symbol("label") -> "Hashtag",
-                    Symbol("placeholder") -> "#MyFeelings",
-                    Symbol("id") -> "hashtag",
-                    Symbol("size") -> 20
-                )
-@*              https://www.playframework.com/documentation/2.8.x/ScalaFileUpload*@
-                <input type="file" name="picture">
-
-                <input type="submit" value="Tweet">
-                }
-        </div>
-
-
-        <ul class="tweets">
-        @for(tweet <- tweets) {
-            <li>
-                <div class="card tweet" id="tweet-@tweet.id">
-                    <div class="card-body">
-                        <h4 class="card-title"><a href="/profile/@tweet.username">@tweet.username</a></h4>
-                        @if(tweet.sharedBy.isDefined) {
-                            <h6 class="card-subtitle mb-2 text-muted">Shared by: <a href="/profile/@tweet.sharedBy.get">@tweet.sharedBy.get</a></h6>
-                        }
-                        @if(tweet.image.isDefined) {
-                            <img src="@routes.Assets.versioned(s"images/${tweet.image.get}")" alt="missing image">
-                        }
-                        <p class="card-text">@tweet.content</p>
-                        @if(tweet.hashtag != "") {
-                            <p class="card-text">@tweet.hashtag</p>
-                        }
-                        @if(tweet.username == session.get("username").get) {
-                            @helper.form(removeUrl, Symbol("id") -> s"remove-tweet-form-${tweet.id}", Symbol("class") -> "remove-tweet-form") {
-                                @helper.CSRF.formField
-
-                                <input type="hidden" name="id" value="@tweet.id">
-
-                                <input type="submit" value="delete" class="alert alert-danger">
-                                }
-                        }
-                    </div>
-                    @if(tweet.comments.nonEmpty) {
-                        <div class="card-footer">
-                        @for(comment <- tweet.comments) {
-                            <div>
-                            @comment.content
-                            </div>
-                            <div>
-                            @comment.likes
-                            </div>
-                        }
+                @if(form.hasGlobalErrors) {
+                    @form.globalErrors.map { error: FormError =>
+                        <div class="alert alert-danger">
+                            Error: @error.key: @error.message
                         </div>
                     }
-                </div>
-            </li>
-        }
-        </ul>
-    </div>
-}
+                }
+
+                @helper.form(postUrl, Symbol("id") -> "new-tweet-form", Symbol("enctype") -> "multipart/form-data") {
+                    @helper.CSRF.formField
+
+                    @helper.inputText(
+                        form("content"),
+                        Symbol("label") -> "What's on your mind?",
+                        Symbol("placeholder") -> "Today I ...",
+                        Symbol("id") -> "content",
+                        Symbol("size") -> 160
+                    )
+
+                    @helper.inputText(
+                        form("hashtag"),
+                        Symbol("label") -> "Hashtag",
+                        Symbol("placeholder") -> "#MyFeelings",
+                        Symbol("id") -> "hashtag",
+                        Symbol("size") -> 20
+                    )
+                    @* https://www.playframework.com/documentation/2.8.x/ScalaFileUpload*@
+                    <input type="file" name="picture">
+
+                    <input type="submit" value="Tweet">
+                    }
+            </div>
+
+
+            <ul class="tweets">
+            @for(tweet <- tweets) {
+                <li>
+                    <div class="card tweet" id="tweet-@tweet.id">
+                        <div class="card-body">
+                            <h4 class="card-title"><a href="/profile/@tweet.username">@tweet.username</a></h4>
+                            @if(tweet.sharedBy.isDefined) {
+                                <h6 class="card-subtitle mb-2 text-muted">
+                                    Shared by: <a href="/profile/@tweet.sharedBy.get">@tweet.sharedBy.get</a></h6>
+                            }
+                            @if(tweet.image.isDefined) {
+                                <img src="@routes.Assets.versioned(s"images/${tweet.image.get}")" alt="missing image">
+                            }
+                            <p class="card-text">@tweet.content</p>
+                            @if(tweet.hashtag != "") {
+                                <p class="card-text">@tweet.hashtag</p>
+                            }
+                            @if(tweet.username == session.get("username").get) {
+                                @helper.form(removeUrl, Symbol("id") -> s"remove-tweet-form-${tweet.id}", Symbol("class") -> "remove-tweet-form") {
+                                    @helper.CSRF.formField
+
+                                    <input type="hidden" name="id" value="@tweet.id">
+
+                                    <input type="submit" value="delete" class="alert alert-danger">
+                                }
+                            }
+
+                                @helper.form(routes.TweetController.likeTweet, Symbol("class") -> "like-tweet-form") {
+                                    @helper.CSRF.formField
+
+                                    <input type="hidden" name="id" value="@tweet.id">
+
+                                    <input type="submit" value="like" class="alert alert-light">
+                                }
+
+
+@*                                @helper.form(routes.TweetController.unlikeTweet, Symbol("class") -> "like-tweet-form") {*@
+@*                                    @helper.CSRF.formField*@
+
+@*                                    <input type="hidden" name="id" value="@tweet.id">*@
+
+@*                                    <input type="submit" value="unlike" class="alert alert-success"*@
+@*                                        @if(!tweet.likes.contains(session.get("username").get)) {hidden}>*@
+@*                                    }*@
+
+
+                        </div>
+                        @if(tweet.comments.nonEmpty) {
+                            <div class="card-footer">
+                            @for(comment <- tweet.comments) {
+                                <div>
+                                @comment.content
+                                </div>
+                                <div>
+                                @comment.likes
+                                </div>
+                            }
+                            </div>
+                        }
+                    </div>
+                </li>
+            }
+            </ul>
+        </div>
+    }

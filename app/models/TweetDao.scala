@@ -8,11 +8,11 @@ import javax.inject.{Inject, Singleton}
 @Singleton
 class TweetDao @Inject()(userDao: UserDao) {
   var tweets: ListBuffer[Tweet] = ListBuffer(
-    Tweet(1, "admin", "lorem ipsum", "#MyFirstTestUwU", 8, List[Comment](
+    Tweet(1, "admin", "lorem ipsum", "#MyFirstTestUwU", List(), List[Comment](
       Comment("user", "lorem ipsum", 3, DateTime.now),
       Comment("user2", "lorem ipsum 2", 5, DateTime.now)
     ), DateTime.now),
-    Tweet(2, "user2", "second tweet", "#test", 8, List[Comment](
+    Tweet(2, "user2", "second tweet", "#test", List(), List[Comment](
       Comment("user3", "only one comment for this one", 555555, DateTime.now)
     ), DateTime.now)
   )
@@ -29,7 +29,7 @@ class TweetDao @Inject()(userDao: UserDao) {
   }
 
   def addTweet(username: String, content: String, hashtag: String, imageLink: Option[String]): Unit = {
-      val tweet = Tweet(nextIndex, username, content, hashtag, 0, List(), DateTime.now, imageLink)
+      val tweet = Tweet(nextIndex, username, content, hashtag, List(), List(), DateTime.now, imageLink)
       nextIndex += 1
       tweets += tweet
   }
@@ -58,4 +58,28 @@ class TweetDao @Inject()(userDao: UserDao) {
       case _: Exception => false
     }
   }
+
+  def getTweetById(id: Long): Tweet = {
+    tweets.filter(_.id == id).head
+  }
+
+  def likeTweet(id: Long, username: String): Boolean = { // true if tweet is now liked, else false (method also unlikes if already likes)
+    try {
+      val tweet = getTweetById(id)
+      if (!tweet.likes.contains(username)) {
+        tweet.likes = username :: tweet.likes
+        true
+      } else {
+        tweet.likes = tweet.likes.filter(_ != username)
+        false
+      }
+    } catch {
+      case e: NoSuchElementException => false
+    }
+  }
+
+//  def unlikeTweet(id: Long, username: String): Unit = {
+//    val tweet = getTweetById(id)
+//    tweet.likes = tweet.likes.filter(_ != username)
+//  }
 }
