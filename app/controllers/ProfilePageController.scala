@@ -18,7 +18,7 @@ class ProfilePageController @Inject()(userDao: UserDao,
           tweetDao.tweetsById(user.sharedTweets).map({ tweet =>
             tweet.copy(sharedBy = Some(username))
           })
-        Ok(views.html.profilePage(user, tweets.sortBy(_.timestamp).reverse, routes.TweetController.removeTweet,
+        Ok(views.html.profilePage(user, tweets.sortBy(_.timestamp).reverse,
           userDao.getUser(request.session.get(models.Global.SESSION_USERNAME_KEY).get)))
       } else {
         NoContent

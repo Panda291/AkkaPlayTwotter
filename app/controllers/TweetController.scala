@@ -30,7 +30,6 @@ class TweetController @Inject()(
   )
 
   private val formSubmitUrl = routes.TweetController.postTweet
-  private val formRemoveUrl = routes.TweetController.removeTweet
 
   def showTimeLine(): Action[AnyContent] = Action { implicit request: MessagesRequest[AnyContent] =>
     if (request.session.get(models.Global.SESSION_USERNAME_KEY).isDefined) {
@@ -47,7 +46,6 @@ class TweetController @Inject()(
         tweets.sortBy(_.timestamp).reverse,
         newTweetForm,
         formSubmitUrl,
-        formRemoveUrl,
         clientUser
       ))
     } else {
@@ -69,12 +67,12 @@ class TweetController @Inject()(
           Ok("File uploaded")
         }
         .getOrElse {
-          BadRequest(views.html.TimeLine(tweetDao.tweetsSortedByDate(), newTweetForm, formSubmitUrl, formRemoveUrl,
+          BadRequest(views.html.TimeLine(tweetDao.tweetsSortedByDate(), newTweetForm, formSubmitUrl,
             userDao.getUser(request.session.get(models.Global.SESSION_USERNAME_KEY).get)))
         }
       // end of part found online
       val errorFunction = { formWithErrors: Form[NewTweetAttempt] =>
-        BadRequest(views.html.TimeLine(tweetDao.tweetsSortedByDate(), formWithErrors, formSubmitUrl, formRemoveUrl,
+        BadRequest(views.html.TimeLine(tweetDao.tweetsSortedByDate(), formWithErrors, formSubmitUrl,
           userDao.getUser(request.session.get(models.Global.SESSION_USERNAME_KEY).get)))
       }
       val successFunction = { tweet: NewTweetAttempt =>
@@ -97,33 +95,18 @@ class TweetController @Inject()(
     }
   }
 
-  // TODO: this form should not be necessary at all (see likeTweet)
-  val removeTweetForm: Form[RemoveTweetAttempt] = Form(
-    mapping(
-      "id" -> number
-        .verifying("Tweet not found", s => tweetDao.tweetExists(s))
-    )(RemoveTweetAttempt.apply)(RemoveTweetAttempt.unapply)
-  )
-
   def removeTweet = Action { implicit request =>
     if (request.session.get(models.Global.SESSION_USERNAME_KEY).isDefined) {
-      val errorFunction = { formWithErrors: Form[RemoveTweetAttempt] =>
-        BadRequest(views.html.TimeLine(tweetDao.tweetsSortedByDate(), newTweetForm, formSubmitUrl, formRemoveUrl,
-          userDao.getUser(request.session.get(models.Global.SESSION_USERNAME_KEY).get)))
-      }
-      val successFunction = { tweet: RemoveTweetAttempt =>
-        if (tweetDao.removeTweet(tweet.id, request.session.get(models.Global.SESSION_USERNAME_KEY).get)) {
-//          Redirect(request.headers.apply("Referer")) // redirect to caller of this function (useful for profile page)
+      val body: Option[Map[String, Seq[String]]] = request.body.asFormUrlEncoded
+      body.map { body =>
+        if (tweetDao.removeTweet(body("id").head.toInt, request.session.get(models.Global.SESSION_USERNAME_KEY).get)) {
           Ok
         } else {
           NoContent
         }
+      }.getOrElse {
+        BadRequest("Expecting application/json request body")
       }
-      val formValidationResult: Form[RemoveTweetAttempt] = removeTweetForm.bindFromRequest
-      formValidationResult.fold(
-        errorFunction,
-        successFunction
-      )
     } else Redirect(routes.UserController.showLoginForm())
   }
 

@@ -1,7 +1,6 @@
 @(tweets: List[Tweet],
         form: Form[models.NewTweetAttempt],
         postUrl: Call,
-        removeUrl: Call,
         clientUser: User)(implicit session: Session,
         request: MessagesRequestHeader) @* (implicit flash: Flash)*@
     @main("My Timeline", session) {
@@ -63,7 +62,7 @@
                                 <p class="card-text">@tweet.hashtag</p>
                             }
                             @if(tweet.username == session.get("username").get) {
-                                @helper.form(removeUrl, Symbol("id") -> s"remove-tweet-form-${tweet.id}", Symbol("class") -> "remove-tweet-form") {
+                                @helper.form(routes.TweetController.removeTweet(), Symbol("id") -> s"remove-tweet-form-${tweet.id}", Symbol("class") -> "remove-tweet-form") {
                                     @helper.CSRF.formField
 
                                     <input type="hidden" name="id" value="@tweet.id">

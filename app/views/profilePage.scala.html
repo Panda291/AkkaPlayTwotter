@@ -1,4 +1,4 @@
-@(user: User, tweets: List[Tweet], removeUrl: Call, clientUser: User)(implicit session: Session, request: MessagesRequestHeader)
+@(user: User, tweets: List[Tweet], clientUser: User)(implicit session: Session, request: MessagesRequestHeader)
     @main(user.username, session) {
         <h1>@user.username</h1>
         @if(user.username != clientUser.username) {
@@ -30,7 +30,7 @@
                             <p class="card-text">@tweet.hashtag</p>
                         }
                         @if(tweet.username == clientUser.username) {
-                            @helper.form(removeUrl, Symbol("id") -> s"remove-tweet-form-${tweet.id}", Symbol("class") -> "remove-tweet-form") {
+                            @helper.form(routes.TweetController.removeTweet(), Symbol("id") -> s"remove-tweet-form-${tweet.id}", Symbol("class") -> "remove-tweet-form") {
                                 @helper.CSRF.formField
 
                                 <input type="hidden" name="id" value="@tweet.id">
