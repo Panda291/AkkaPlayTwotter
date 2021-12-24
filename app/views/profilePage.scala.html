@@ -25,15 +25,31 @@
                             <input type="submit" value="delete" class="alert alert-danger">
                             }
                     }
+                    @helper.form(routes.TweetController.likeTweet, Symbol("class") -> "like-tweet-form") {
+                        @helper.CSRF.formField
+
+                        <input type="hidden" name="id" value="@tweet.id">
+
+                        <input type="submit" value="like" class="alert alert-light">
+                    }
+                    @helper.form(routes.TweetController.commentOnTweet(), Symbol("class") -> "comment-on-tweet-form") {
+                        @helper.CSRF.formField
+
+                        <input type="hidden" name="target" value="@tweet.id">
+
+                        <label>
+                            Comment:
+                            <textarea placeholder="Leave a comment" name="content"></textarea>
+                        </label>
+
+                        <input type="submit" value="comment" class="alert alert-light">
+                        }
                 </div>
                 @if(tweet.comments.nonEmpty) {
                     <div class="card-footer">
                     @for(comment <- tweet.comments) {
                         <div>
                         @comment.content
-                        </div>
-                        <div>
-                        @comment.likes
                         </div>
                     }
                     </div>

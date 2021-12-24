@@ -9,11 +9,11 @@ import javax.inject.{Inject, Singleton}
 class TweetDao @Inject()(userDao: UserDao) {
   var tweets: ListBuffer[Tweet] = ListBuffer(
     Tweet(1, "admin", "lorem ipsum", "#MyFirstTestUwU", List(), List[Comment](
-      Comment("user", "lorem ipsum", 3, DateTime.now),
-      Comment("user2", "lorem ipsum 2", 5, DateTime.now)
+      Comment("user", "lorem ipsum", DateTime.now),
+      Comment("user2", "lorem ipsum 2", DateTime.now)
     ), DateTime.now),
     Tweet(2, "user2", "second tweet", "#test", List(), List[Comment](
-      Comment("user3", "only one comment for this one", 555555, DateTime.now)
+      Comment("user3", "only one comment for this one", DateTime.now)
     ), DateTime.now)
   )
   var nextIndex: Long = tweets.map(_.id).max + 1
@@ -78,8 +78,8 @@ class TweetDao @Inject()(userDao: UserDao) {
     }
   }
 
-//  def unlikeTweet(id: Long, username: String): Unit = {
-//    val tweet = getTweetById(id)
-//    tweet.likes = tweet.likes.filter(_ != username)
-//  }
+  def addComment(id: Long, comment: Comment) = {
+    val tweet = getTweetById(id)
+    tweet.comments = (comment :: tweet.comments).sortBy(_.timestamp).reverse
+  }
 }

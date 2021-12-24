@@ -21,7 +21,7 @@ GET         /timeline            controllers.TweetController.showTimeLine
 POST        /doPostTweet         controllers.TweetController.postTweet
 POST        /removeTweet         controllers.TweetController.removeTweet
 POST        /likeTweet           controllers.TweetController.likeTweet
-#POST        /unlikeTweet         controllers.TweetController.unlikeTweet
+POST        /commentTweet        controllers.TweetController.commentOnTweet
 #
 ## show profile
 GET         /profile/*user      controllers.ProfilePageController.showProfilePage(user: String)

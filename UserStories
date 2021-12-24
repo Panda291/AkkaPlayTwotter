@@ -7,7 +7,7 @@ DONE: User can remove their own tweet
 DONE: User can delete CORRECT tweet
 DONE: User can see other users' profile
 DONE: User can like/unlike tweets
-TODO: User can comment on tweets
+DONE: User can comment on tweets
 TODO: User can follow other user
 TODO: User can see followed users' tweets on their index page
 TODO: User can sort index page tweets by date or amount of likes

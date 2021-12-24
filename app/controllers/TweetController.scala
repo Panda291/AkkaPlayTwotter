@@ -1,6 +1,6 @@
 package controllers
 
-import models.{NewTweetAttempt, RemoveTweetAttempt, TweetDao}
+import models.{NewCommentAttempt, NewTweetAttempt, RemoveTweetAttempt, TweetDao}
 import play.api.data.Forms._
 import play.api.data._
 import play.api.libs.json.JsValue
@@ -84,7 +84,7 @@ class TweetController @Inject()(
     }
   }
 
-
+  // TODO: this form should not be necessary at all (see likeTweet)
   val removeTweetForm: Form[RemoveTweetAttempt] = Form(
     mapping(
       "id" -> number
@@ -127,15 +127,31 @@ class TweetController @Inject()(
     }
   }
 
-//  def unlikeTweet = authenticatedUserAction { implicit request =>
-//    val body: Option[Map[String, Seq[String]]] = request.body.asFormUrlEncoded
-//    body.map {body =>
-//      tweetDao.unlikeTweet(body("id").head.toInt, request.session.get(models.Global.SESSION_USERNAME_KEY).get)
-//      Ok
-//    }.getOrElse {
-//      BadRequest("Expecting application/json request body")
-//    }
-//  }
+
+  val newCommentForm: Form[NewCommentAttempt] = Form(
+    mapping(
+      "content" -> nonEmptyText
+        .verifying("too few chars",  s => lengthIsGreaterThanNCharacters(s, 2))
+        .verifying("too many chars", s => lengthIsLessThanNCharacters(s, 160)),
+      "target" -> number
+    )(NewCommentAttempt.apply)(NewCommentAttempt.unapply)
+  )
+
+  def commentOnTweet = Action { implicit request =>
+    val errorFunction = { formWithErrors: Form[NewCommentAttempt] =>
+      BadRequest
+    }
+    val successFunction = { commentAttempt: NewCommentAttempt =>
+      val comment = commentAttempt.toComment(request.session.get(models.Global.SESSION_USERNAME_KEY).get)
+      tweetDao.addComment(commentAttempt.target, comment)
+      Ok
+    }
+    val formValidationResult: Form[NewCommentAttempt] = newCommentForm.bindFromRequest
+    formValidationResult.fold(
+      errorFunction,
+      successFunction
+    )
+  }
 
   private def lengthIsGreaterThanNCharacters(s: String, n: Int): Boolean = {
     if (s.length > n) true else false
