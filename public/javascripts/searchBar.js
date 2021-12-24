@@ -1,6 +1,6 @@
 $(document).ready(function () {
     $.ajax({
-        url: '/userList',
+        url: '/searchList',
         type: 'get',
         success: function (data) {
             $("#datalistOptions").html(data)

@@ -14,7 +14,8 @@ DONE: User can share other users' tweets
 DONE: User should be able to use search bar to find any user
 DONE: User should be able to go to users' profiles by clicking their name
 DONE: Tweets should have a hashtag assigned to it
-TODO: Users should be able to search for tweets with a certain hashtag
+DONE: Users should be able to search for tweets with a certain hashtag
 TODO: Users should not see "Explore", "Share a though" and "Profile" when not logged in
+TODO: removeTweet should not be passing a removeUrl and should not use form control as posting/registering/login does
 TODO: Server should store data either in memory or in a json file
 TODO: Site should look visually pleasing

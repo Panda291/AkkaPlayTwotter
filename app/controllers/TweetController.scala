@@ -191,6 +191,17 @@ class TweetController @Inject()(
     }
   }
 
+  def searchList: Action[AnyContent] = Action { implicit request =>
+    Ok(views.html.searchList(userDao, tweetDao))
+  }
+
+  def showHashtagTweets(hashtag: String) = Action { implicit request =>
+    if (request.session.get(models.Global.SESSION_USERNAME_KEY).isDefined) {
+      val clientUser = userDao.getUser(request.session.get(models.Global.SESSION_USERNAME_KEY).get)
+      Ok(views.html.hashtagPage(tweetDao.getTweetsByHashtag("#" + hashtag), hashtag, clientUser))
+    } else Redirect(routes.UserController.showLoginForm())
+  }
+
   private def lengthIsGreaterThanNCharacters(s: String, n: Int): Boolean = {
     if (s.length > n) true else false
   }

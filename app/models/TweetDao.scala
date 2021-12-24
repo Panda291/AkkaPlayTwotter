@@ -94,4 +94,8 @@ class TweetDao @Inject()(userDao: UserDao) {
       user.sharedTweets.contains(tweet.id)
     }).toList
   }
+
+  def getTweetsByHashtag(hashtag: String): List[Tweet] = {
+    tweets.filter(_.hashtag == hashtag).toList
+  }
 }

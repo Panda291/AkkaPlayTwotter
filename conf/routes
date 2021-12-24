@@ -14,7 +14,6 @@ GET         /register            controllers.UserController.showRegisterForm
 POST        /doRegister          controllers.UserController.processRegisterAttempt
 GET         /login               controllers.UserController.showLoginForm
 POST        /doLogin             controllers.UserController.processLoginAttempt
-GET         /userList            controllers.UserController.userList
 #
 ## pages for authenticated users
 GET         /logout              controllers.AuthenticatedUserController.logout
@@ -24,10 +23,12 @@ POST        /removeTweet         controllers.TweetController.removeTweet
 POST        /likeTweet           controllers.TweetController.likeTweet
 POST        /commentTweet        controllers.TweetController.commentOnTweet
 POST        /shareTweet          controllers.TweetController.shareTweet
+GET         /searchList          controllers.TweetController.searchList
+GET         /hashtag/*hashtag    controllers.TweetController.showHashtagTweets(hashtag: String)
 #
 ## show profile
 GET         /profile/*user      controllers.ProfilePageController.showProfilePage(user: String)
 POST        /profile/*user/follow   controllers.ProfilePageController.followUser(user: String)
 
 ## debug pages ## TODO: these should not exist when submitting the project
-GET         /userList            controllers.DebugController.showUserListPage
+#GET         /userList            controllers.DebugController.showUserListPage

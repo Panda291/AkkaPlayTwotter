@@ -98,10 +98,6 @@ class UserController @Inject()(
       )
     }
 
-    def userList: Action[AnyContent] = Action { implicit request =>
-      Ok(views.html.userNames(userDao))
-    }
-
     private def lengthIsGreaterThanNCharacters(s: String, n: Int): Boolean = {
         if (s.length > n) true else false
     }

@@ -92,7 +92,7 @@
                         <form class="d-flex" id="search-user-form">
 @*                            https://getbootstrap.com/docs/5.0/forms/form-control/#datalists*@
                             <label for="exampleDataList" class="form-label">Search User:</label>
-                            <input class="form-control" list="datalistOptions" id="searchUserName" placeholder="Type to search...">
+                            <input class="form-control" list="datalistOptions" id="searchUserName" placeholder="Type to search..." autocomplete="off">
                             <datalist id="datalistOptions">
 @*                                search options will be dropped here by jQuery*@
                             </datalist>
@@ -103,7 +103,11 @@
                                 e.preventDefault();
                                 var form = $(this);
                                 var val = form.children("input#searchUserName").val();
-                                location.replace("/profile/" + val)
+                                if(val.slice(0,1) === '@@') { // if user chose a user
+                                    location.replace("/profile/" + val.slice(1, val.length));
+                                } else {
+                                    location.replace("/hashtag/" + val.slice(1, val.length));
+                                }
                             });
                         </script>
                     }

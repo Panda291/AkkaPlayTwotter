@@ -1,0 +1,7 @@
+@(userDao: UserDao, tweetDao: TweetDao)
+@for(username <- userDao.allUsernames()) {
+    <option value="@@@username" username>
+}
+@for(hashtag <- tweetDao.tweets.filter(_.hashtag != "").map(_.hashtag).distinct) {
+    <option value="@hashtag" hashtag>
+}
