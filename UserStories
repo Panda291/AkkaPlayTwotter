@@ -11,9 +11,9 @@ DONE: User can comment on tweets
 DONE: User can follow other user
 DONE: User can see followed users' tweets on their index page
 DONE: User can share other users' tweets
-TODO: User should be able to use search bar to find any user
-TODO: User should be able to go to users' profiles by clicking their name
-TODO: Tweets should have a hashtag assigned to it
+DONE: User should be able to use search bar to find any user
+DONE: User should be able to go to users' profiles by clicking their name
+DONE: Tweets should have a hashtag assigned to it
 TODO: Users should be able to search for tweets with a certain hashtag
 TODO: Users should not see "Explore", "Share a though" and "Profile" when not logged in
 TODO: Server should store data either in memory or in a json file

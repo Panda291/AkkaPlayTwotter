@@ -57,4 +57,8 @@ class UserDao @Inject()() {
       true
     }
   }
+
+  def allUsernames(): Seq[String] = {
+    users.keys.toSeq
+  }
 }

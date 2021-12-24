@@ -14,6 +14,7 @@ GET         /register            controllers.UserController.showRegisterForm
 POST        /doRegister          controllers.UserController.processRegisterAttempt
 GET         /login               controllers.UserController.showLoginForm
 POST        /doLogin             controllers.UserController.processLoginAttempt
+GET         /userList            controllers.UserController.userList
 #
 ## pages for authenticated users
 GET         /logout              controllers.AuthenticatedUserController.logout

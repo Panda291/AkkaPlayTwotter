@@ -15,7 +15,7 @@ class ProfilePageController @Inject()(userDao: UserDao,
       if (userDao.lookupUser(username)) {
         val user = userDao.getUser(username)
         val tweets: List[Tweet] = tweetDao.tweetsOfUser(username) ++
-          tweetDao.tweetsById(user.sharedTweets).map({tweet =>
+          tweetDao.tweetsById(user.sharedTweets).map({ tweet =>
             tweet.copy(sharedBy = Some(username))
           })
         Ok(views.html.profilePage(user, tweets.sortBy(_.timestamp).reverse, routes.TweetController.removeTweet,

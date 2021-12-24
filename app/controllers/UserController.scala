@@ -3,6 +3,7 @@ package controllers
 import models.{Global, LoginAttempt, RegisterAttempt, UserDao}
 import play.api.data.Forms._
 import play.api.data._
+import play.api.libs.json.Json
 import play.api.mvc._
 
 import javax.inject.Inject
@@ -95,6 +96,10 @@ class UserController @Inject()(
           errorFunction,
           successFunction
       )
+    }
+
+    def userList: Action[AnyContent] = Action { implicit request =>
+      Ok(views.html.userNames(userDao))
     }
 
     private def lengthIsGreaterThanNCharacters(s: String, n: Int): Boolean = {
