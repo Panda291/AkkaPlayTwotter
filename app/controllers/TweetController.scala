@@ -35,12 +35,20 @@ class TweetController @Inject()(
   def showTimeLine(): Action[AnyContent] = Action { implicit request: MessagesRequest[AnyContent] =>
     if (request.session.get(models.Global.SESSION_USERNAME_KEY).isDefined) {
       val clientUser = userDao.getUser(request.session.get(models.Global.SESSION_USERNAME_KEY).get)
+      var tweets = tweetDao.tweetsForUserSortedByDate(clientUser)
+      for (followedUser <- clientUser.followedUsers) {
+        tweets = tweets ++ tweetDao.tweetsSharedByUser(userDao.getUser(followedUser)).map({tweet =>
+          tweet.copy(sharedBy = Some(followedUser))
+        })
+      }
+
       Ok(views.html.TimeLine(
 //        tweetDao.tweetsSortedByDate(),
-        tweetDao.tweetsForUserSortedByDate(clientUser),
+        tweets.sortBy(_.timestamp).reverse,
         newTweetForm,
         formSubmitUrl,
-        formRemoveUrl
+        formRemoveUrl,
+        clientUser
       ))
     } else {
       Redirect(routes.UserController.showLoginForm())
@@ -61,11 +69,13 @@ class TweetController @Inject()(
           Ok("File uploaded")
         }
         .getOrElse {
-          BadRequest(views.html.TimeLine(tweetDao.tweetsSortedByDate(), newTweetForm, formSubmitUrl, formRemoveUrl))
+          BadRequest(views.html.TimeLine(tweetDao.tweetsSortedByDate(), newTweetForm, formSubmitUrl, formRemoveUrl,
+            userDao.getUser(request.session.get(models.Global.SESSION_USERNAME_KEY).get)))
         }
       // end of part found online
       val errorFunction = { formWithErrors: Form[NewTweetAttempt] =>
-        BadRequest(views.html.TimeLine(tweetDao.tweetsSortedByDate(), formWithErrors, formSubmitUrl, formRemoveUrl))
+        BadRequest(views.html.TimeLine(tweetDao.tweetsSortedByDate(), formWithErrors, formSubmitUrl, formRemoveUrl,
+          userDao.getUser(request.session.get(models.Global.SESSION_USERNAME_KEY).get)))
       }
       val successFunction = { tweet: NewTweetAttempt =>
         tweetDao.addTweet(
@@ -98,7 +108,8 @@ class TweetController @Inject()(
   def removeTweet = Action { implicit request =>
     if (request.session.get(models.Global.SESSION_USERNAME_KEY).isDefined) {
       val errorFunction = { formWithErrors: Form[RemoveTweetAttempt] =>
-        BadRequest(views.html.TimeLine(tweetDao.tweetsSortedByDate(), newTweetForm, formSubmitUrl, formRemoveUrl))
+        BadRequest(views.html.TimeLine(tweetDao.tweetsSortedByDate(), newTweetForm, formSubmitUrl, formRemoveUrl,
+          userDao.getUser(request.session.get(models.Global.SESSION_USERNAME_KEY).get)))
       }
       val successFunction = { tweet: RemoveTweetAttempt =>
         if (tweetDao.removeTweet(tweet.id, request.session.get(models.Global.SESSION_USERNAME_KEY).get)) {
@@ -117,16 +128,19 @@ class TweetController @Inject()(
   }
 
   def likeTweet = authenticatedUserAction { implicit request =>
-//    val body: AnyContent = request.body
-    val body: Option[Map[String, Seq[String]]] = request.body.asFormUrlEncoded
-    body.map {body =>
-      if(tweetDao.likeTweet(body("id").head.toInt, request.session.get(models.Global.SESSION_USERNAME_KEY).get)) {
-        Ok("added")
-      } else {
-        Ok("removed")
+    if (request.session.get(models.Global.SESSION_USERNAME_KEY).isDefined) {
+      val body: Option[Map[String, Seq[String]]] = request.body.asFormUrlEncoded
+      body.map { body =>
+        if (tweetDao.likeTweet(body("id").head.toInt, request.session.get(models.Global.SESSION_USERNAME_KEY).get)) {
+          Ok("added")
+        } else {
+          Ok("removed")
+        }
+      }.getOrElse {
+        BadRequest("Expecting application/json request body")
       }
-    } .getOrElse {
-      BadRequest("Expecting application/json request body")
+    } else {
+      Unauthorized
     }
   }
 
@@ -154,6 +168,27 @@ class TweetController @Inject()(
       errorFunction,
       successFunction
     )
+  }
+
+  def shareTweet = Action { implicit request =>
+    if (request.session.get(models.Global.SESSION_USERNAME_KEY).isDefined) {
+      val body: Option[Map[String, Seq[String]]] = request.body.asFormUrlEncoded
+      body.map { body =>
+        if (request.session.get(models.Global.SESSION_USERNAME_KEY).get != tweetDao.getTweetById(body("id").head.toLong).username) {
+          if (userDao.shareTweet(request.session.get(models.Global.SESSION_USERNAME_KEY).get, tweetDao.getTweetById(body("id").head.toLong))) {
+            Ok("shared")
+          } else {
+            Ok("unshared")
+          }
+        } else {
+          Unauthorized
+        }
+      }.getOrElse {
+        BadRequest("Expecting application/json request body")
+      }
+    } else {
+      Unauthorized
+    }
   }
 
   private def lengthIsGreaterThanNCharacters(s: String, n: Int): Boolean = {

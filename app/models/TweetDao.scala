@@ -22,7 +22,7 @@ class TweetDao @Inject()(userDao: UserDao) {
     tweets.filter(_.username == username).toList
   }
 
-  def tweetsById(ids: List[Int]): List[Tweet] = {
+  def tweetsById(ids: List[Long]): List[Tweet] = {
     tweets.filter(t => {
       ids.contains(t.id)
     }).toList
@@ -40,7 +40,7 @@ class TweetDao @Inject()(userDao: UserDao) {
   }
 
   def tweetsSortedByDate(): List[Tweet] = {
-    tweets.toList.sortWith(_.timestamp > _.timestamp)
+    tweets.toList.sortBy(_.timestamp).reverse
   }
 
   def tweetExists(id: Int): Boolean = {
@@ -86,6 +86,12 @@ class TweetDao @Inject()(userDao: UserDao) {
   def tweetsForUserSortedByDate(user: User): List[Tweet] = {
     tweets.filter({tweet =>
       user.followedUsers.contains(tweet.username) // all tweets of which the creator is followed by the client
-    }).sortBy(_.timestamp).reverse.toList         // ordered by date, reversed
+    }).toList
+  }
+
+  def tweetsSharedByUser(user: User): List[Tweet] = {
+    tweets.filter({tweet =>
+      user.sharedTweets.contains(tweet.id)
+    }).toList
   }
 }

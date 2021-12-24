@@ -9,9 +9,8 @@ DONE: User can see other users' profile
 DONE: User can like/unlike tweets
 DONE: User can comment on tweets
 DONE: User can follow other user
-TODO: User can see followed users' tweets on their index page
-TODO: User can sort index page tweets by date or amount of likes
-TODO: User can share other users' tweets
+DONE: User can see followed users' tweets on their index page
+DONE: User can share other users' tweets
 TODO: User should be able to use search bar to find any user
 TODO: User should be able to go to users' profiles by clicking their name
 TODO: Tweets should have a hashtag assigned to it

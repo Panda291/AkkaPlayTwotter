@@ -1,10 +1,15 @@
-@(user: User, tweets: List[Tweet], removeUrl: Call)(implicit session: Session, request: MessagesRequestHeader)
+@(user: User, tweets: List[Tweet], removeUrl: Call, clientUser: User)(implicit session: Session, request: MessagesRequestHeader)
     @main(user.username, session) {
-        <h1>@user.username <h1>
-            @if(user.username != session.get("username").get) {
+        <h1>@user.username</h1>
+            @if(user.username != clientUser.username) {
                 @helper.form(routes.ProfilePageController.followUser(user.username), Symbol("class") -> "follow-user-form") {
                     @helper.CSRF.formField
-                    <input type="submit" value="follow" class="alert alert-info">
+                    @if(!clientUser.followedUsers.contains(user.username)) {
+                        <input type="submit" value="follow" class="alert alert-info">
+                    }
+                    @if(clientUser.followedUsers.contains(user.username)) {
+                        <input type="submit" value="unfollow" class="alert alert-success">
+                    }
                 }
             }
             <ul class="tweets">
@@ -24,7 +29,7 @@
                             @if(tweet.hashtag != "") {
                                 <p class="card-text">@tweet.hashtag</p>
                             }
-                            @if(tweet.username == session.get("username").get) {
+                            @if(tweet.username == clientUser.username) {
                                 @helper.form(removeUrl, Symbol("id") -> s"remove-tweet-form-${tweet.id}", Symbol("class") -> "remove-tweet-form") {
                                     @helper.CSRF.formField
 
@@ -52,6 +57,19 @@
 
                                 <input type="submit" value="comment" class="alert alert-light">
                                 }
+                            @if(clientUser.username != tweet.username) {
+                                @helper.form(routes.TweetController.shareTweet(), Symbol("class") -> "share-tweet-form") {
+                                    @helper.CSRF.formField
+
+                                    <input type="hidden" name="id" value="@tweet.id">
+                                    @if(clientUser.sharedTweets.contains(tweet.id)) {
+                                        <input type="submit" value="unshare" class="alert alert-success">
+                                    }
+                                    @if(!clientUser.sharedTweets.contains(tweet.id)) {
+                                        <input type="submit" value="share" class="alert alert-warning">
+                                        }
+                                }
+                            }
                         </div>
                         @if(tweet.comments.nonEmpty) {
                             <div class="card-footer">

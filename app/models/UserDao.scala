@@ -46,4 +46,15 @@ class UserDao @Inject()() {
       true
     }
   }
+
+  def shareTweet(username: String, tweet: Tweet): Boolean = { //true if now shared, else false (method shares and unshares)
+    val user = getUser(username)
+    if (user.sharedTweets.contains(tweet.id)) {
+      user.sharedTweets = user.sharedTweets.filter(_ != tweet.id)
+      false
+    } else {
+      user.sharedTweets = tweet.id :: user.sharedTweets
+      true
+    }
+  }
 }

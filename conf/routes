@@ -22,6 +22,7 @@ POST        /doPostTweet         controllers.TweetController.postTweet
 POST        /removeTweet         controllers.TweetController.removeTweet
 POST        /likeTweet           controllers.TweetController.likeTweet
 POST        /commentTweet        controllers.TweetController.commentOnTweet
+POST        /shareTweet          controllers.TweetController.shareTweet
 #
 ## show profile
 GET         /profile/*user      controllers.ProfilePageController.showProfilePage(user: String)

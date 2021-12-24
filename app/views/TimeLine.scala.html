@@ -1,7 +1,8 @@
 @(tweets: List[Tweet],
         form: Form[models.NewTweetAttempt],
         postUrl: Call,
-        removeUrl: Call)(implicit session: Session,
+        removeUrl: Call,
+        clientUser: User)(implicit session: Session,
         request: MessagesRequestHeader) @* (implicit flash: Flash)*@
     @main("My Timeline", session) {
         <div id="content" class="wrapper doc">
@@ -82,14 +83,25 @@
                                 @helper.CSRF.formField
 
                                 <input type="hidden" name="target" value="@tweet.id">
-                                
+
                                 <label>
                                     Comment:
                                     <textarea placeholder="Leave a comment" name="content"></textarea>
                                 </label>
 
                                 <input type="submit" value="comment" class="alert alert-light">
+                            }
+                            @helper.form(routes.TweetController.shareTweet(), Symbol("class") -> "share-tweet-form") {
+                                @helper.CSRF.formField
+
+                                <input type="hidden" name="id" value="@tweet.id">
+                                @if(clientUser.sharedTweets.contains(tweet.id)) {
+                                    <input type="submit" value="unshare" class="alert alert-success">
                                 }
+                                @if(!clientUser.sharedTweets.contains(tweet.id)) {
+                                    <input type="submit" value="share" class="alert alert-warning">
+                                    }
+                            }
                         </div>
                         @if(tweet.comments.nonEmpty) {
                             <div class="card-footer">
