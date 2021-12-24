@@ -27,4 +27,22 @@ class ProfilePageController @Inject()(userDao: UserDao,
       Redirect(routes.UserController.showLoginForm())
     }
   }
+
+  def followUser(username: String) = Action { implicit request: MessagesRequest[AnyContent] =>
+    if (request.session.get(models.Global.SESSION_USERNAME_KEY).isDefined) {
+      val clientUser = userDao.getUser(request.session.get(models.Global.SESSION_USERNAME_KEY).get)
+      val targetUser = userDao.getUser(username)
+      if (clientUser == targetUser) { // user can not follow themselves
+        NoContent
+      } else {
+        if (userDao.followUser(clientUser, targetUser)) {
+          Ok("followed")
+        } else {
+          Ok("unfollowed")
+        }
+      }
+    } else {
+      Unauthorized
+    }
+  }
 }

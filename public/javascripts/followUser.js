@@ -1,6 +1,6 @@
 // https://stackoverflow.com/questions/1960240/jquery-ajax-submit-form
 $(document).ready(function () {
-    $(".like-tweet-form").submit(function (e) {
+    $(".follow-user-form").submit(function (e) {
         e.preventDefault();
 
         var form = $(this);
@@ -11,16 +11,16 @@ $(document).ready(function () {
             url: url,
             data: form.serialize(),
             success: function (data) {
-                if (data === "added") {
+                if (data === "followed") {
                     form.children('input.alert')
                         .removeClass("alert-light")
                         .addClass("alert-success")
-                        .attr('value', 'unlike')
-                } else if (data === "removed") {
+                        .attr('value', 'unfollow')
+                } else if (data === "unfollowed") {
                     form.children('input.alert')
                         .removeClass("alert-success")
                         .addClass("alert-light")
-                        .attr('value', 'like')
+                        .attr('value', 'follow')
                 }
             }
         });

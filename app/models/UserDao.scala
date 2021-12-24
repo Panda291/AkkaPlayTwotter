@@ -6,7 +6,7 @@ import scala.collection.mutable
 @javax.inject.Singleton
 class UserDao @Inject()() {
   var users: mutable.Map[String, User] = mutable.Map[String, User](
-    "user" -> User("user", "user", List(1)),
+    "user" -> User("user", "user", List(1), List("admin")),
     "user1" -> User("user1", "user1", List(2)),
     "user2" -> User("user2", "user2", List()),
     "admin" -> User("admin", "admin", List())
@@ -35,5 +35,15 @@ class UserDao @Inject()() {
 
   def getUser(u: String): User = {
     users(u)
+  }
+
+  def followUser(clientUser: User, targetUser: User): Boolean = { //true if now following, else false (method follows and unfollows)
+    if (clientUser.followedUsers.contains(targetUser.username)) {
+      clientUser.followedUsers = clientUser.followedUsers.filter(_ != targetUser.username)
+      false
+    } else {
+      clientUser.followedUsers = targetUser.username :: clientUser.followedUsers
+      true
+    }
   }
 }

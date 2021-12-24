@@ -78,8 +78,14 @@ class TweetDao @Inject()(userDao: UserDao) {
     }
   }
 
-  def addComment(id: Long, comment: Comment) = {
+  def addComment(id: Long, comment: Comment): Unit = {
     val tweet = getTweetById(id)
     tweet.comments = (comment :: tweet.comments).sortBy(_.timestamp).reverse
+  }
+
+  def tweetsForUserSortedByDate(user: User): List[Tweet] = {
+    tweets.filter({tweet =>
+      user.followedUsers.contains(tweet.username) // all tweets of which the creator is followed by the client
+    }).sortBy(_.timestamp).reverse.toList         // ordered by date, reversed
   }
 }

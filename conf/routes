@@ -25,6 +25,7 @@ POST        /commentTweet        controllers.TweetController.commentOnTweet
 #
 ## show profile
 GET         /profile/*user      controllers.ProfilePageController.showProfilePage(user: String)
+POST        /profile/*user/follow   controllers.ProfilePageController.followUser(user: String)
 
 ## debug pages ## TODO: these should not exist when submitting the project
 GET         /userList            controllers.DebugController.showUserListPage

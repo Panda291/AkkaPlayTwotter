@@ -1,6 +1,6 @@
 package controllers
 
-import models.{NewCommentAttempt, NewTweetAttempt, RemoveTweetAttempt, TweetDao}
+import models.{NewCommentAttempt, NewTweetAttempt, RemoveTweetAttempt, TweetDao, UserDao}
 import play.api.data.Forms._
 import play.api.data._
 import play.api.libs.json.JsValue
@@ -13,7 +13,8 @@ import javax.inject._
 class TweetController @Inject()(
                                  cc: MessagesControllerComponents,
                                  authenticatedUserAction: AuthenticatedUserAction,
-                                 tweetDao: TweetDao
+                                 tweetDao: TweetDao,
+                                 userDao: UserDao
                                ) extends MessagesAbstractController(cc) {
 
   val newTweetForm: Form[NewTweetAttempt] = Form(
@@ -33,8 +34,10 @@ class TweetController @Inject()(
 
   def showTimeLine(): Action[AnyContent] = Action { implicit request: MessagesRequest[AnyContent] =>
     if (request.session.get(models.Global.SESSION_USERNAME_KEY).isDefined) {
+      val clientUser = userDao.getUser(request.session.get(models.Global.SESSION_USERNAME_KEY).get)
       Ok(views.html.TimeLine(
-        tweetDao.tweetsSortedByDate(),
+//        tweetDao.tweetsSortedByDate(),
+        tweetDao.tweetsForUserSortedByDate(clientUser),
         newTweetForm,
         formSubmitUrl,
         formRemoveUrl
