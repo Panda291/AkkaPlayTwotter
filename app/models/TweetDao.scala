@@ -11,7 +11,7 @@ class TweetDao @Inject()(userDao: UserDao) {
     Tweet(1, "admin", "lorem ipsum", "#MyFirstTestUwU", List(), List[Comment](
       Comment("user", "lorem ipsum", DateTime.now),
       Comment("user2", "lorem ipsum 2", DateTime.now)
-    ), DateTime.now),
+    ), DateTime.now, Some("780739435678400542.gif")),
     Tweet(2, "user2", "second tweet", "#test", List(), List[Comment](
       Comment("user3", "only one comment for this one", DateTime.now)
     ), DateTime.now)

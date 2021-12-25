@@ -17,5 +17,4 @@ DONE: Tweets should have a hashtag assigned to it
 DONE: Users should be able to search for tweets with a certain hashtag
 DONE: Users should not see "Explore", "Share a though" and "Profile" when not logged in
 DONE: removeTweet should not be passing a removeUrl and should not use form control as posting/registering/login does
-TODO: Server should store data either in memory or in a json file
-TODO: Site should look visually pleasing
+DONE: Site should look visually pleasing

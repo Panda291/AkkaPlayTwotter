@@ -12,14 +12,14 @@ $(document).ready(function () {
             data: form.serialize(),
             success: function (data) {
                 if (data === "shared") {
-                    form.children('input.alert')
-                        .removeClass("alert-warning")
-                        .addClass("alert-success")
+                    form.children('input.btn')
+                        .removeClass("btn-warning")
+                        .addClass("btn-success")
                         .attr('value', 'unshare')
                 } else if (data === "unshared") {
-                    form.children('input.alert')
-                        .removeClass("alert-success")
-                        .addClass("alert-warning")
+                    form.children('input.btn')
+                        .removeClass("btn-success")
+                        .addClass("btn-warning")
                         .attr('value', 'share')
                 }
             }

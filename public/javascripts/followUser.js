@@ -12,14 +12,14 @@ $(document).ready(function () {
             data: form.serialize(),
             success: function (data) {
                 if (data === "followed") {
-                    form.children('input.alert')
-                        .removeClass("alert-light")
-                        .addClass("alert-success")
+                    form.children('input.btn')
+                        .removeClass("btn-secondary")
+                        .addClass("btn-success")
                         .attr('value', 'unfollow')
                 } else if (data === "unfollowed") {
-                    form.children('input.alert')
-                        .removeClass("alert-success")
-                        .addClass("alert-light")
+                    form.children('input.btn')
+                        .removeClass("btn-success")
+                        .addClass("btn-secondary")
                         .attr('value', 'follow')
                 }
             }
