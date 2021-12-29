@@ -3,7 +3,7 @@
 # https://www.playframework.com/documentation/latest/ScalaRouting
 # ~~~~
 
-GET         /                    controllers.HomeController.index
+GET         /                    controllers.TweetController.showTimeLine
 
 
 ## Map static resources from the /public folder to the /assets URL path
@@ -29,6 +29,3 @@ GET         /hashtag/*hashtag    controllers.TweetController.showHashtagTweets(h
 ## show profile
 GET         /profile/*user      controllers.ProfilePageController.showProfilePage(user: String)
 POST        /profile/*user/follow   controllers.ProfilePageController.followUser(user: String)
-
-## debug pages ## TODO: these should not exist when submitting the project
-#GET         /userList            controllers.DebugController.showUserListPage

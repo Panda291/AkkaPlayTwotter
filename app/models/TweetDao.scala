@@ -34,18 +34,18 @@ class TweetDao @Inject()(userDao: UserDao) {
       tweets += tweet
   }
 
-  def removeTweetById(id: Int): Unit = {
-    tweets = tweets.filter(_.id != id)
-    userDao.removeSharedTweetById(id)
-  }
+//  def removeTweetById(id: Int): Unit = {
+//    tweets = tweets.filter(_.id != id)
+//    userDao.removeSharedTweetById(id)
+//  }
 
   def tweetsSortedByDate(): List[Tweet] = {
     tweets.toList.sortBy(_.timestamp).reverse
   }
 
-  def tweetExists(id: Int): Boolean = {
-    tweets.exists(_.id == id)
-  }
+//  def tweetExists(id: Int): Boolean = {
+//    tweets.exists(_.id == id)
+//  }
 
   def removeTweet(id: Long, username: String): Boolean = {
     try {
